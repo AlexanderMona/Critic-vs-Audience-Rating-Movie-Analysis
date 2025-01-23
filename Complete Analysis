@@ -1,0 +1,158 @@
+# Critic vs Audience Movie Ratings Analysis
+
+This repository contains an analysis of movie ratings from Metacritic and Rotten Tomatoes. The goal is to compare critic and audience reviews, explore differences across genres, and identify patterns in popularity for directors and production companies.
+
+---
+
+## Table of Contents
+1. [Data Collection](#data-collection)
+    - [Load Rotten Tomatoes Data](#load-rotten-tomatoes-data)
+    - [Web Scraping Metacritic Data](#web-scraping-metacritic-data)
+2. [Data Cleaning and Merging](#data-cleaning-and-merging)
+    - [Merge Rotten Tomatoes with Metacritic Data](#merge-rotten-tomatoes-with-metacritic-data)
+    - [Filter and Clean Merged Data](#filter-and-clean-merged-data)
+3. [Analysis](#analysis)
+    - [Q1: Metacritic vs Rotten Tomatoes](#q1-metacritic-vs-rotten-tomatoes)
+        - [Correlation](#correlation)
+        - [Scatterplot](#scatterplot)
+        - [Histogram](#histogram)
+    - [Q2: Genre-Based Score Differences](#q2-genre-based-score-differences)
+    - [Q3: Audience vs Rotten Tomatoes](#q3-audience-vs-rotten-tomatoes)
+        - [Correlation](#correlation-1)
+        - [Scatterplot](#scatterplot-1)
+    - [Q4: Popular Directors and Production Companies](#q4-popular-directors-and-production-companies)
+
+---
+
+## Data Collection
+
+### Load Rotten Tomatoes Data
+
+```r
+rotten_tomatoes <- read.csv("rottentomatoes.csv", stringsAsFactors = FALSE)
+rotten_tomatoes$summary <- NULL
+```
+
+### Web Scraping Metacritic Data
+```r
+library(xml2)
+library(rvest)
+user_agent <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+```
+
+# Initialize an empty data frame to store all movies data
+```r
+all_movies_df <- data.frame(stringsAsFactors = FALSE)
+
+for (i in 0:26) {
+  print(i)
+  curr_page <- paste("https://www.metacritic.com/browse/movie/all/all/2016/metascore/?page=", i, sep="")
+  page <- read_html(curr_page, user_agent)
+  
+  movie_title <- xml_text(xml_find_all(page, "//div[@class ='c-finderProductCard_title']/h3/span[2]"))
+  release_date <- xml_text(xml_find_all(page, "//span[@class ='u-text-uppercase']"))
+  meta_score <- as.integer(xml_text(xml_find_all(page, xpath = "//span[@data-v-4cdca868='']")))
+  summary <- xml_text(xml_find_all(page, xpath = "//div[@class='c-finderProductCard_description']"))
+  
+  rv <- sample(3:15, 1)
+  Sys.sleep(rv)
+  
+  movies_df <- data.frame(movie_title, release_date, meta_score, summary)
+  all_movies_df <- rbind(all_movies_df, movies_df)
+}
+```
+## Data Cleaning and Merging
+### Merge Rotten Tomatoes with Metacritic Data
+
+```r
+merged_movie_reviews <- merge(rotten_tomatoes, all_movies_df, by.x = "movie_title", by.y = "movie_title")
+````
+### Filter and Clean Merged Data
+```r
+library(lubridate)
+library(dplyr)
+
+subset_merged <- merged_movie_reviews %>%
+  mutate(year = year(mdy(original_release_date))) %>%
+  filter(year == 2016)
+
+# Data Cleaning
+subset_merged$year <- NULL
+subset_merged$release_date <- NULL
+subset_merged <- subset_merged[subset_merged$movie_title != "Yosemite", ]
+subset_merged <- subset_merged[subset_merged$movie_title != "Equals", ]
+```
+
+## Analysis
+## Q1: Metacritic vs Rotten Tomatoes
+### Correlation 
+```r
+cor.test(subset_merged$meta_score, subset_merged$tomatometer_rating)
+```
+### Scatterplot
+
+```r
+plot(subset_merged$tomatometer_rating, subset_merged$meta_score,
+     xlab = "Tomatometer Rating", ylab = "Metascore",
+     main = "Tomatometer vs Metascore Scatterplot",
+     col = "red")
+```
+### Histogram 
+
+```r
+library(ggplot2)
+ggplot(subset_merged, aes(x = tomatometer_rating, fill = "Tomatometer")) +
+  geom_histogram(binwidth = 5, color = "black", alpha = 0.7) +
+  geom_histogram(aes(x = meta_score, fill = "Metascore"), binwidth = 5, color = "black", alpha = 0.7) +
+  labs(title = "Comparison of Tomatometer and Metascore Rating Distribution",
+       x = "Rating",
+       y = "Frequency") +
+  scale_fill_manual(values = c("Tomatometer" = "red", "Metascore" = "blue"))
+```
+
+## Q2: Genre-Based Score Differences
+
+```r
+genre_ratings <- subset_merged %>%
+  group_by(genres) %>%
+  summarise(avg_rotten_rating = mean(tomatometer_rating, na.rm = TRUE),
+            avg_metacritic_rating = mean(meta_score, na.rm = TRUE))
+
+ggplot(genre_ratings, aes(x = genres)) +
+  geom_bar(aes(y = avg_rotten_rating, fill = "Rotten Tomatoes"), stat = "identity", position = "dodge", alpha = 0.8) +
+  geom_bar(aes(y = avg_metacritic_rating, fill = "Metacritic"), stat = "identity", position = "dodge", alpha = 0.8) +
+  labs(title = "Average Ratings by Genre on Rotten Tomatoes vs. Metacritic",
+       x = "Genre",
+       y = "Average Rating") +
+  scale_fill_manual(values = c("Rotten Tomatoes" = "red", "Metacritic" = "blue"), name = "Rating Source") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Q3: Audience vs Rotten Tomatoes
+### Correlation
+
+```r
+cor.test(subset_merged$audience_rating, subset_merged$tomatometer_rating)
+```
+### Scatterplot
+
+```r
+plot(subset_merged$audience_rating, subset_merged$tomatometer_rating,
+     xlab = "Audience Rating", ylab = "Tomatometer Rating",
+     main = "Audience Ratings vs Tomatometer Scatterplot",
+     col = "purple")
+```
+
+## Q4: Popular Directors and Production Companies
+
+```r
+subset_merged$rating_diff <- subset_merged$audience_rating - subset_merged$combo_score
+
+audience_director_ranking <- aggregate(subset_merged$rating_diff, by = list(directors = subset_merged$directors), FUN = mean, na.rm = TRUE)
+audience_company_ranking <- aggregate(subset_merged$rating_diff, by = list(production_company = subset_merged$production_company), FUN = mean, na.rm = TRUE)
+
+# Display Top 10 Directors and Companies
+top10_audience_directors <- head(audience_director_ranking[order(audience_director_ranking$x, decreasing = TRUE), ], 10)
+top10_audience_companies <- head(audience_company_ranking[order(audience_company_ranking$x, decreasing = TRUE), ], 10)
+```
