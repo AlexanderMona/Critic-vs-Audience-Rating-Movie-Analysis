@@ -1,4 +1,10 @@
-# Critic vs Audience Movie Ratings Analysis
+---
+title: "Critic vs Audience Movie Ratings Analysis"
+author: "Alexander Mona"
+date: "2025-01-22"
+output: html_document
+---
+
 
 This repository contains an analysis of movie ratings from Metacritic and Rotten Tomatoes. The goal is to compare critic and audience reviews, explore differences across genres, and identify patterns in popularity for directors and production companies.
 
@@ -28,20 +34,20 @@ This repository contains an analysis of movie ratings from Metacritic and Rotten
 
 ### Load Rotten Tomatoes Data
 
-```r
+```{r}
 rotten_tomatoes <- read.csv("rottentomatoes.csv", stringsAsFactors = FALSE)
 rotten_tomatoes$summary <- NULL
 ```
 
 ### Web Scraping Metacritic Data
-```r
+```{r}
 library(xml2)
 library(rvest)
 user_agent <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 ```
 
 # Initialize an empty data frame to store all movies data
-```r
+```{r}
 all_movies_df <- data.frame(stringsAsFactors = FALSE)
 
 for (i in 0:26) {
@@ -64,11 +70,11 @@ for (i in 0:26) {
 ## Data Cleaning and Merging
 ### Merge Rotten Tomatoes with Metacritic Data
 
-```r
+```{r}
 merged_movie_reviews <- merge(rotten_tomatoes, all_movies_df, by.x = "movie_title", by.y = "movie_title")
 ````
 ### Filter and Clean Merged Data
-```r
+```{r}
 library(lubridate)
 library(dplyr)
 
@@ -86,12 +92,12 @@ subset_merged <- subset_merged[subset_merged$movie_title != "Equals", ]
 ## Analysis
 ## Q1: Metacritic vs Rotten Tomatoes
 ### Correlation 
-```r
+```{r}
 cor.test(subset_merged$meta_score, subset_merged$tomatometer_rating)
 ```
 ### Scatterplot
 
-```r
+```{r}
 plot(subset_merged$tomatometer_rating, subset_merged$meta_score,
      xlab = "Tomatometer Rating", ylab = "Metascore",
      main = "Tomatometer vs Metascore Scatterplot",
@@ -99,7 +105,7 @@ plot(subset_merged$tomatometer_rating, subset_merged$meta_score,
 ```
 ### Histogram 
 
-```r
+```{r}
 library(ggplot2)
 ggplot(subset_merged, aes(x = tomatometer_rating, fill = "Tomatometer")) +
   geom_histogram(binwidth = 5, color = "black", alpha = 0.7) +
@@ -112,7 +118,7 @@ ggplot(subset_merged, aes(x = tomatometer_rating, fill = "Tomatometer")) +
 
 ## Q2: Genre-Based Score Differences
 
-```r
+```{r}
 genre_ratings <- subset_merged %>%
   group_by(genres) %>%
   summarise(avg_rotten_rating = mean(tomatometer_rating, na.rm = TRUE),
@@ -132,12 +138,12 @@ ggplot(genre_ratings, aes(x = genres)) +
 ## Q3: Audience vs Rotten Tomatoes
 ### Correlation
 
-```r
+```{r}
 cor.test(subset_merged$audience_rating, subset_merged$tomatometer_rating)
 ```
 ### Scatterplot
 
-```r
+```{r}
 plot(subset_merged$audience_rating, subset_merged$tomatometer_rating,
      xlab = "Audience Rating", ylab = "Tomatometer Rating",
      main = "Audience Ratings vs Tomatometer Scatterplot",
@@ -146,7 +152,7 @@ plot(subset_merged$audience_rating, subset_merged$tomatometer_rating,
 
 ## Q4: Popular Directors and Production Companies
 
-```r
+```{r}
 subset_merged$rating_diff <- subset_merged$audience_rating - subset_merged$combo_score
 
 audience_director_ranking <- aggregate(subset_merged$rating_diff, by = list(directors = subset_merged$directors), FUN = mean, na.rm = TRUE)
