@@ -5,6 +5,7 @@ date: "2025-01-22"
 output: html_document
 ---
 
+# Critic vs Audience Movie Ratings Analysis
 
 This repository contains an analysis of movie ratings from Metacritic and Rotten Tomatoes. The goal is to compare critic and audience reviews, explore differences across genres, and identify patterns in popularity for directors and production companies.
 
