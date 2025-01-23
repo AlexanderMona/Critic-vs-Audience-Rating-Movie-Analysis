@@ -35,18 +35,26 @@ The datasets were merged using the movie title as the key, resulting in a combin
 
 ## Final Dataset Variables:
 The dataset includes the following fields:
-| Column Name        | Description                                  | Data Type |
-|--------------------|----------------------------------------------|-----------|
-| `movie_title`      | Title of the movie                          | Text      |
-| `summary`          | Short description of the movie              | Text      |
-| `release_date`     | Movie's release date                        | Date      |
-| `meta_score`       | Critic score from Metacritic                | Numeric   |
-| `tomatometer`      | Critic score from Rotten Tomatoes           | Numeric   |
-| `combo_score`      | Average of `meta_score` and `tomatometer`   | Numeric   |
-| `audience_rating`  | Audience score from Rotten Tomatoes         | Numeric   |
-| `genres`           | Movie genres                                | Text      |
-| `directors`        | Director(s) of the movie                    | Text      |
-| `production_company` | Production company of the movie           | Text      |
+| **Column**           | **Type**  | **Source**        | **Description**                                      |
+|-----------------------|-----------|-------------------|----------------------------------------------------|
+| `movie_title`         | Text      | Both              | Title of the movie                                 |
+| `director`            | Text      | Rotten Tomatoes   | Director of the movie                              |
+| `summary`             | Text      | Both              | A description of the movie                        |
+| `release_date`        | Date      | Both              | The month and year the movie was released         |
+| `tomatometer_rating`  | Numeric   | Rotten Tomatoes   | The review score as decided by Rotten Tomatoes critics |
+| `meta_score`          | Numeric   | Metacritic        | The review score as decided by Metacritic movie critics |
+| `combo_score`         | Numeric   | Both              | The average critic review ranking between Metascore and Tomatometer |
+| `audience_rating`     | Numeric   | Rotten Tomatoes   | The review score as decided by Rotten Tomatoes users |
+| `content_rating`      | Text      | Rotten Tomatoes   | The motion picture rating of the movie (e.g., PG-13, R) |
+| `genres`              | Text      | Rotten Tomatoes   | The genre of the movie                             |
+| `authors`             | Text      | Rotten Tomatoes   | Writers or writer of the movie                    |
+| `actors`              | Text      | Rotten Tomatoes   | Actors featured in the movie                      |
+| `runtime`             | Numeric   | Rotten Tomatoes   | Runtime of the movie in minutes                   |
+| `production_company`  | Text      | Rotten Tomatoes   | The production company of the movie               |
+| `tomatometer_count`   | Numeric   | Rotten Tomatoes   | Total number of reviews by critics                |
+| `audience_count`      | Numeric   | Rotten Tomatoes   | Total number of reviews by non-critics (audience) |
+| `rating_diff`         | Numeric   | Both              | The audience rating minus the combo score         |
+
 
 ## How to Run the Code
 1. Clone the repository.
