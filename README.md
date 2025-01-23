@@ -3,7 +3,7 @@
 ## Overview
 The final report with graphics and explanations is found in the **Data Wrangling - Final Report** PDF file.
 
-This project explores the relationship between movie critic reviews and audience ratings, focusing on data from Metacritic’s **Metascores** and Rotten Tomatoes’s **Tomatometer**. We aim to uncover patterns and underlying correlations in movie evaluations, examine genre-based score differences, and identify directors and production companies favored by audiences over critics.
+This project explores the relationship between movie critic reviews and audience ratings, focusing on data from Metacritic’s **Metascores** and Rotten Tomatoes’s **Tomatometer**. We aim to use R to uncover patterns and underlying correlations in movie evaluations, examine genre-based score differences, and identify directors and production companies favored by audiences over critics.
 
 The study integrates multiple datasets and employs data scraping, data preprocessing and cleaning, and statistical analysis techniques. We included visualizations to enhance understanding and interpretation of the results.
 
