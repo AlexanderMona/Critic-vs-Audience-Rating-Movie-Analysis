@@ -27,7 +27,7 @@ for (i in 0:26) {
   
   movie_title <- xml_text(xml_find_all(page, "//div[@class ='c-finderProductCard_title']/h3/span[2]"))
   release_date <- xml_text(xml_find_all(page, "//span[@class ='u-text-uppercase']"))
-  meta_score <- as.integer(xml_text(xml_find_all(page, xpath = "//span[@data-v-4cdca868='']")))
+  meta_score <- as.integer(xml_text(xml_find_all(page, xpath = "//span[@data-v-e408cafe='']")))
   summary <- xml_text(xml_find_all(page, xpath = "//div[@class='c-finderProductCard_description']"))
   
   rv <- sample(3:15, 1)
