@@ -1,7 +1,7 @@
 # Critic-vs-Audience-Rating-Movie-Analysis
 
 ## Overview
-The final report with graphics and explanations is found in the **Final Report** Word document.
+The final report with graphics and explanations is found in the **Data Wrangling - Final Report** Word document.
 
 This project explores the relationship between movie critic reviews and audience ratings, focusing on data from Metacritic’s **Metascores** and Rotten Tomatoes’s **Tomatometer**. We aim to uncover patterns and underlying correlations in movie evaluations, examine genre-based score differences, and identify directors and production companies favored by audiences over critics.
 
